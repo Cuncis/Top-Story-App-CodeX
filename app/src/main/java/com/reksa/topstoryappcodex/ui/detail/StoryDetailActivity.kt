@@ -2,6 +2,7 @@
 package com.reksa.topstoryappcodex.ui.detail
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -24,6 +25,8 @@ class StoryDetailActivity : AppCompatActivity(), StoryDetailContract.View {
     private var list = ArrayList<Int>()
     private var comments = arrayListOf<CommentResponse>()
     private var url = ""
+    private var responseData = ""
+    private var isFavorite: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +72,7 @@ class StoryDetailActivity : AppCompatActivity(), StoryDetailContract.View {
     override fun onResultDetail(response: StoryResponse) {
         url = response.url!!
         list.addAll(response.kids!!)
+        responseData = response.title.toString()
         tv_titleDetail.text = response.title
         tv_authorDetail.text = "By ${response.by}"
         tv_dateDetail.text = "${Utility.getDateTimeFromEpocLongOfSeconds(response.time?.toLong()!!)}"
@@ -98,15 +102,38 @@ class StoryDetailActivity : AppCompatActivity(), StoryDetailContract.View {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == R.id.action_favorite) {
-            showMessage("Favorited")
+            if (!isFavorite) {
+                showMessage("Add Favorite")
+                isFavorite = true
+            } else {
+                showMessage("Remove Favorited")
+                isFavorite = false
+            }
             true
         } else {
             super.onOptionsItemSelected(item)
         }
     }
 
+    private fun setState() {
+        if (isFavorite) {
+            val intent = Intent()
+            intent.putExtra("RESULT", responseData)
+            setResult(Activity.RESULT_OK, intent)
+            finish()
+        } else {
+            val intent = Intent()
+            setResult(Activity.RESULT_CANCELED, intent)
+            finish()
+        }
+    }
+
     override fun onSupportNavigateUp(): Boolean {
-        finish()
+        setState()
         return super.onSupportNavigateUp()
+    }
+
+    override fun onBackPressed() {
+        setState()
     }
 }
