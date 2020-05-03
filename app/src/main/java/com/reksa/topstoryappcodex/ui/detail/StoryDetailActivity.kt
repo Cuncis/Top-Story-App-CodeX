@@ -2,7 +2,10 @@
 package com.reksa.topstoryappcodex.ui.detail
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -10,13 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.reksa.topstoryappcodex.R
 import com.reksa.topstoryappcodex.model.CommentResponse
 import com.reksa.topstoryappcodex.model.StoryResponse
-import com.reksa.topstoryappcodex.util.Constant.SIZE_OF_DATA
 import com.reksa.topstoryappcodex.util.Utility
 import kotlinx.android.synthetic.main.activity_story_detail.*
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.URL
-import java.util.concurrent.Executors
 
 class StoryDetailActivity : AppCompatActivity(), StoryDetailContract.View {
 
@@ -24,6 +22,7 @@ class StoryDetailActivity : AppCompatActivity(), StoryDetailContract.View {
     private lateinit var commentAdapter: StoryDetailCommentAdapter
     private var list = ArrayList<Int>()
     private var comments = arrayListOf<CommentResponse>()
+    private var url = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +45,14 @@ class StoryDetailActivity : AppCompatActivity(), StoryDetailContract.View {
         }
     }
 
+    override fun initListener() {
+        tv_descriptionDetail.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(url)
+            startActivity(intent)
+        }
+    }
+
     override fun onLoading(loading: Boolean) {
         when (loading) {
             true -> {
@@ -59,11 +66,13 @@ class StoryDetailActivity : AppCompatActivity(), StoryDetailContract.View {
 
     @SuppressLint("SetTextI18n")
     override fun onResultDetail(response: StoryResponse) {
+        url = response.url!!
         list.addAll(response.kids!!)
         tv_titleDetail.text = response.title
         tv_authorDetail.text = "By ${response.by}"
         tv_dateDetail.text = "${Utility.getDateTimeFromEpocLongOfSeconds(response.time?.toLong()!!)}"
-        tv_descriptionDetail.text = response.title
+        tv_descriptionDetail.text = response.url
+
         for (i in 0 until list.size) {
             presenter.getAllCommentById(list[i].toString())
         }

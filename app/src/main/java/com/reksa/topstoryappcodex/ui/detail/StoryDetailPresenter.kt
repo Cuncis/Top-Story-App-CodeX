@@ -12,6 +12,7 @@ class StoryDetailPresenter(private val view: StoryDetailContract.View): StoryDet
 
     init {
         view.initRecyclerView()
+        view.initListener()
     }
 
     override fun getTopStoriesDetail(id: String) {

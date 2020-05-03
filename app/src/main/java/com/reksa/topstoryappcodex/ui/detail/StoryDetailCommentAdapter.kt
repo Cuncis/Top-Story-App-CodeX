@@ -1,5 +1,6 @@
 package com.reksa.topstoryappcodex.ui.detail
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.text.Html
 import android.view.LayoutInflater
@@ -37,9 +38,14 @@ class StoryDetailCommentAdapter(private val context: Context): RecyclerView.Adap
         var textName: TextView = view.tv_name
         var textComment: TextView = view.tv_comment
 
+        @SuppressLint("SetTextI18n")
         fun bind(data: CommentResponse) {
             textName.text = data.by
-            textComment.text = Html.fromHtml(data.text).toString()
+            if (data.text != null) {
+                textComment.text = " ${Html.fromHtml(data.text)}"
+            } else {
+                textComment.text = " - "
+            }
         }
     }
 

@@ -12,6 +12,7 @@ interface StoryDetailContract {
 
     interface View {
         fun initRecyclerView()
+        fun initListener()
         fun onLoading(loading: Boolean)
         fun onResultDetail(response: StoryResponse)
         fun onResultComment(response: CommentResponse)
